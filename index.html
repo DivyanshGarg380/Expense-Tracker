@@ -12,6 +12,12 @@
     <p id="date">Today</p>
 
     <div class="input-section">
+      <input type="number" id="daily-limit" placeholder="Enter daily limit">
+      <button id="set-limit-btn">Set Limit</button>
+    </div>
+    <div id="daily-limit-display" style="text-align:center; font-size:1.5rem; margin-bottom:20px;"></div>
+
+    <div class="input-section" id="expense-section" style="display:none;">
       <input type="text" id="expense-type" placeholder="Expense Type">
       <input type="number" id="expense-amount" placeholder="Amount">
       <button id="add-expense">Add Expense</button>
@@ -19,7 +25,7 @@
 
     <div id="expense-list" class="expense-list"></div>
 
-    <button id="reset-btn" class="reset-btn">Reset</button>
+    <button id="reset-btn" class="reset-btn" style="display: none;">Reset</button>
   </div>
 
   <script src="script.js"></script>

@@ -3,20 +3,39 @@ const addExpenseBtn = document.getElementById('add-expense');
 const expenseTypeInput = document.getElementById('expense-type');
 const expenseAmountInput = document.getElementById('expense-amount');
 const resetBtn = document.getElementById('reset-btn');
+const expenseLimitInput = document.getElementById('daily-limit');
+const dailyLimitBtn = document.getElementById('set-limit-btn');
+const dailyLimitDisplay = document.getElementById('daily-limit-display');
+const expenseSection = document.getElementById('expense-section');
 
 const today = new Date();
 dateElement.textContent = today.toDateString();
 
 let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+let dailyLimit = parseFloat(localStorage.getItem('dailyLimit')) || 0;
+
+if (dailyLimit > 0) {
+    dailyLimitDisplay.style.display = 'block';
+    dailyLimitDisplay.textContent = `Daily Limit: ₹${dailyLimit.toFixed(2)}`;
+    expenseLimitInput.style.display = 'none';
+    dailyLimitBtn.style.display = 'none';
+    expenseSection.style.display = 'flex';
+} else {
+    dailyLimitDisplay.style.display = 'none';
+    expenseSection.style.display = 'none';
+}
+
+if (expenses.length > 0) resetBtn.style.display = 'block';
 trackExpense();
 
-addExpenseBtn.addEventListener('click', () =>{
-    const purchaseType = expenseTypeInput.value;
+addExpenseBtn.addEventListener('click', () => {
+    const purchaseType = expenseTypeInput.value.trim();
     const amount = parseFloat(expenseAmountInput.value);
-    if(amount < 0 || isNaN(amount) || purchaseType.trim() === '') {
-        showAlert('Please enter a valid expense type');
+    if (amount <= 0 || isNaN(amount) || purchaseType === '') {
+        showAlert('Please enter a valid expense type and amount');
         return;
     }
+
     expenses.push({ type: purchaseType, amount: amount });
     localStorage.setItem('expenses', JSON.stringify(expenses));
     expenseTypeInput.value = '';
@@ -26,58 +45,86 @@ addExpenseBtn.addEventListener('click', () =>{
     resetBtn.style.display = 'block';
 });
 
-function trackExpense(){
+dailyLimitBtn.addEventListener('click', () => {
+    const limit = parseFloat(expenseLimitInput.value);
+    if (isNaN(limit) || limit <= 0) {
+        showAlert('Please enter a valid daily limit');
+        return;
+    }
+
+    dailyLimit = limit;
+    localStorage.setItem('dailyLimit', dailyLimit);
+    expenseLimitInput.value = '';
+
+    dailyLimitDisplay.textContent = `Daily Limit: ₹${dailyLimit.toFixed(2)}`;
+    dailyLimitDisplay.style.color = '#4dff85ff';
+    dailyLimitDisplay.style.display = 'block';
+
+    expenseLimitInput.style.display = 'none';
+    dailyLimitBtn.style.display = 'none';
+    expenseSection.style.display = 'flex';
+
+    showSuccess(`Daily limit set to ₹${dailyLimit.toFixed(2)}`);
+});
+
+function trackExpense() {
     const expenseList = document.getElementById('expense-list');
     expenseList.innerHTML = '';
-    let total = 0;
-    expenses.forEach((expenses) =>{
+
+    let totalSpent = 0;
+
+    expenses.forEach(expense => {
+        totalSpent += expense.amount;
         const li = document.createElement('li');
-        li.textContent = `${expenses.type}: $${expenses.amount.toFixed(2)}`;
+        li.textContent = `${expense.type}: ₹${expense.amount.toFixed(2)}`;
         li.classList.add('expense-item');
         expenseList.appendChild(li);
-        total += expenses.amount;
     });
-    
+
+    if (dailyLimit > 0) {
+        dailyLimitDisplay.textContent = `Daily Limit: ₹${dailyLimit.toFixed(2)} | Spent: ₹${totalSpent.toFixed(2)}`;
+        if (totalSpent < dailyLimit) {
+            dailyLimitDisplay.style.color = '#4dff85ff'; 
+        } else if (totalSpent === dailyLimit) {
+            dailyLimitDisplay.style.color = '#4f5150ff'; 
+        } else {
+            dailyLimitDisplay.style.color = '#ff4d4d'; 
+        }
+    }
 }
 
-resetBtn.addEventListener('click', () =>{
+resetBtn.addEventListener('click', () => {
     expenses = [];
+    dailyLimit = 0;
     localStorage.removeItem('expenses');
+    localStorage.removeItem('dailyLimit');
+
+    expenseSection.style.display = 'none';
+    expenseLimitInput.style.display = 'inline-block';
+    dailyLimitBtn.style.display = 'inline-block';
+    dailyLimitDisplay.style.display = 'none';
+
     trackExpense();
     showSuccess('All expenses have been reset!');
     resetBtn.style.display = 'none';
 });
 
 function showAlert(message) {
-    const popup = document.createElement('div');
-    popup.textContent = message;
-    popup.style.position = 'fixed';
-    popup.style.top = '20px';
-    popup.style.right = '20px';
-    popup.style.padding = '10px 20px';
-    popup.style.backgroundColor = '#ff4d4d';
-    popup.style.color = 'white';
-    popup.style.borderRadius = '8px';
-    popup.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.2)';
-    popup.style.zIndex = '1000';
-    popup.style.fontFamily = 'Arial, sans-serif';
-    popup.style.transition = 'opacity 0.5s ease';
-    document.body.appendChild(popup);
-
-    setTimeout(() => {
-        popup.style.opacity = '0';
-        setTimeout(() => popup.remove(), 500);
-    }, 2000);
+    createPopup(message, '#ff4d4d');
 }
 
 function showSuccess(message) {
+    createPopup(message, '#4dff85ff');
+}
+
+function createPopup(message, bgColor) {
     const popup = document.createElement('div');
     popup.textContent = message;
     popup.style.position = 'fixed';
     popup.style.top = '20px';
     popup.style.right = '20px';
     popup.style.padding = '10px 20px';
-    popup.style.backgroundColor = '#4dff85ff';
+    popup.style.backgroundColor = bgColor;
     popup.style.color = 'white';
     popup.style.borderRadius = '8px';
     popup.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.2)';
