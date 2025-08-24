@@ -150,3 +150,24 @@ h1 {
   cursor: pointer;
   transition: background 0.3s ease;
 }
+
+.weather {
+  display: inline-flex;            
+  align-items: center;            
+  gap: 8px;                    
+  padding: 8px 12px;               
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(6px);     
+}
+
+.weather-icon {
+  width: 24px;
+  height: 24px;
+}
+
+#weather-info {
+  margin: 0;                  
+  font-size: 16px;
+  color: #fff;                     
+}

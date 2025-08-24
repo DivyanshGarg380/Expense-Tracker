@@ -138,3 +138,40 @@ function createPopup(message, bgColor) {
         setTimeout(() => popup.remove(), 500);
     }, 2000);
 }
+
+// Weather Feature idhar se
+import API_KEY from './key.js';
+const weatherInfo = document.getElementById('weather-info');
+const weatherContainer = document.querySelector('.weather');
+const weatherIcon = document.createElement('img');
+
+async function fetchWeather(lat, lon) {
+    try {
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        const temp = Math.round(data.main.temp);
+        const condition = data.weather[0].main.toLowerCase();
+        const iconMap = {
+        clear: 'clear',
+        clouds: 'clouds',
+        drizzle: 'drizzle',
+        mist: 'mist',
+        rain: 'rain',
+        snow: 'snow'
+        };
+        
+        const iconFile = iconMap[condition] || 'clear';
+        const weatherIcon = document.querySelector('.weather-icon');
+        weatherIcon.src = `./icons/${iconFile}.png`;
+        weatherInfo.textContent = `${data.weather[0].main}, ${temp}°C`;
+    }
+    catch (error) {
+        showAlert('Failed to fetch weather data');
+    }
+}
+
+navigator.geolocation.getCurrentPosition(
+  (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+  () => showAlert('Geolocation permission denied')
+);
