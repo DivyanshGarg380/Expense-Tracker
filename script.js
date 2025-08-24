@@ -75,9 +75,22 @@ function trackExpense() {
 
     expenses.forEach(expense => {
         totalSpent += expense.amount;
+
         const li = document.createElement('li');
-        li.textContent = `${expense.type}: ₹${expense.amount.toFixed(2)}`;
         li.classList.add('expense-item');
+        li.innerHTML = `${expense.type}: ₹${expense.amount.toFixed(2)}`;
+
+        const button = document.createElement('button');
+        button.textContent = 'x';
+        button.classList.add('delete-btn');
+        button.addEventListener('click', () => {
+            expenses = expenses.filter(e => e !== expense);
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+            trackExpense();
+            if (expenses.length === 0) resetBtn.style.display = 'none';
+            showSuccess('Expense deleted successfully!');
+        });
+        li.appendChild(button);
         expenseList.appendChild(li);
     });
 
