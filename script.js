@@ -79,7 +79,19 @@ function trackExpense() {
         const li = document.createElement('li');
         li.classList.add('expense-item');
         li.innerHTML = `${expense.type}: ₹${expense.amount.toFixed(2)}`;
-
+        if(dailyLimit > totalSpent && dailyLimit - totalSpent <= 20){
+            showAlert('You are close to reaching your daily limit!');
+            let flickerCount = 0;
+            const flickerInterval = setInterval(() => {
+                dailyLimitDisplay.style.color = 
+                dailyLimitDisplay.style.color === 'rgb(255, 77, 77)' ? '#4dff85ff' : '#ff4d4d';
+                flickerCount++;
+                if (flickerCount >= 10) { 
+                    clearInterval(flickerInterval);
+                    dailyLimitDisplay.style.color = '#4dff85ff'; 
+                }
+            }, 400); 
+        }
         const button = document.createElement('button');
         button.textContent = 'x';
         button.classList.add('delete-btn');
