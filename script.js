@@ -140,14 +140,14 @@ function createPopup(message, bgColor) {
 }
 
 // Weather Feature idhar se
-import API_KEY from './key.js';
+import AI_GATEWAY_API_KEY from './key.js';
 const weatherInfo = document.getElementById('weather-info');
 const weatherContainer = document.querySelector('.weather');
 const weatherIcon = document.createElement('img');
 
 async function fetchWeather(lat, lon) {
     try {
-        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${AI_GATEWAY_API_KEY}`;
         const response = await fetch(url);
         const data = await response.json();
         const temp = Math.round(data.main.temp);
